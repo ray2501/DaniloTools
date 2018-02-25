@@ -93,12 +93,20 @@ oo::class create PipeCommand {
 # Handle a .tar.gz file (decompress)
 #
 proc untargzipfile {file {dir ""}} {
-    if {[catch {package require zlib} errMsg] == 1} {
-        return -code error $errMsg
-    }
+    variable useArchive
 
-    if {[catch {package require tar} errMsg] == 1} {
-        return -code error $errMsg
+    set useArchive 1
+    if {[catch {package require archive} errMsg] == 1} {
+        set useArchive 0
+
+        # fallback
+        if {[catch {package require zlib} errMsg] == 1} {
+            return -code error $errMsg
+        }
+
+        if {[catch {package require tar} errMsg] == 1} {
+            return -code error $errMsg
+        }
     }
 
     if {[file exists $file] != 1} {
@@ -106,29 +114,32 @@ proc untargzipfile {file {dir ""}} {
     }
 
     set rootname [file rootname $file]
-    set fout [open $rootname wb]
-    chan configure $fout -encoding binary -translation binary -buffering none
-    set fin [open $file rb]
-    chan configure $fin -encoding binary -translation binary -buffering none
-    zlib push gunzip $fin
-
-    fcopy $fin $fout
-    close $fin
-    close $fout
-
     if {[string length $dir] == 0} {
         set dir [file dirname $rootname]
     }
 
     if {[file exists $dir] != 1} {
-        file delete $rootname
         return -code error "Dir not exist!!!"
     }
 
-    ::tar::untar $rootname -dir $dir
+    if {$useArchive == 1} {
+        ::archive::extract $file gzip tar 1 -path $dir
+    } else {
+        set fout [open $rootname wb]
+        chan configure $fout -encoding binary -translation binary -buffering none
+        set fin [open $file rb]
+        chan configure $fin -encoding binary -translation binary -buffering none
+        zlib push gunzip $fin
 
-    # Remove the tar file
-    file delete $rootname
+        fcopy $fin $fout
+        close $fin
+        close $fout
+
+        ::tar::untar $rootname -dir $dir
+
+        # Remove the tar file
+        file delete $rootname
+    }
 }
 
 #
