@@ -44,6 +44,20 @@ for handle input and output for open command pipeline.
     puts "Result: $result"
 
 
+## uname
+
+It is using `uname` command to get system information on
+Linux or UNIX-like platform.
+
+Have below functions:  
+::uname::getKernelName  
+::uname::getNodeName  
+::uname::getRelease  
+::uname::getVersion  
+::uname::getMachine  
+::uname::getOperatingSyste  
+
+
 ## untargzipfile
 
 Handle a .tar.gz file (decompress).
