@@ -8,7 +8,7 @@ package require Tcl 8.6-
 package require TclOO
 package require sha256
 
-package provide DaniloTools 0.1
+package provide DaniloTools 0.2
 
 #
 # Wrapper for function call
