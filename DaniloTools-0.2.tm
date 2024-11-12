@@ -244,9 +244,9 @@ proc targzipfile {path {filename ""}} {
 
     set filesize [file size $filename.tar]
     set fin [open $filename.tar r]
-    chan configure $fin -encoding binary -translation binary -blocking 0
+    chan configure $fin -encoding iso8859-1 -translation binary -blocking 0
     set fout [open $filename.tar.gz wb]
-    chan configure $fout -encoding binary -translation binary -buffering none
+    chan configure $fout -encoding iso8859-1 -translation binary -buffering none
     zlib push gzip $fout -level 9
 
     chan copy $fin $fout -size $filesize
