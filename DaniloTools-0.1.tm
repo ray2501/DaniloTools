@@ -4,7 +4,7 @@
 # (C) Danilo Chang 2017, MIT License
 #
 
-package require Tcl 8.6
+package require Tcl 8.6-
 package require TclOO
 package require sha256
 
@@ -37,7 +37,12 @@ proc funcall {function args} {
 # Check support thread or not
 #
 proc is_threaded {} {
- expr {[info exists ::tcl_platform(threaded)] && $::tcl_platform(threaded)}
+  # Tcl 9 always thread-enabled
+  if {[package vsatisfies [package provide Tcl] 9.0-]} {
+    return 1
+  } else {
+    return [expr {[info exists ::tcl_platform(threaded)] && $::tcl_platform(threaded)}]
+  }
 }
 
 #
@@ -181,9 +186,9 @@ proc untargzipfile {file {dir ""}} {
         ::archive::extract $file gzip tar 1 -path $dir
     } else {
         set fout [open $rootname wb]
-        chan configure $fout -encoding binary -translation binary -buffering none
+        chan configure $fout -encoding iso8859-1 -translation binary -buffering none
         set fin [open $file rb]
-        chan configure $fin -encoding binary -translation binary -buffering none
+        chan configure $fin -encoding iso8859-1 -translation binary -buffering none
         zlib push gunzip $fin
 
         fcopy $fin $fout
