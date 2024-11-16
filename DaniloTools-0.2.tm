@@ -38,10 +38,10 @@ proc funcall {function args} {
 #
 proc is_threaded {} {
   # Tcl 9 always thread-enabled
-  if {[package vsatisfies [package provide Tcl] 9.0-]} {
-    return 1
-  } else {
+  if {[package vcompare [info patchlevel] "9.0"] < 0} {
     return [expr {[info exists ::tcl_platform(threaded)] && $::tcl_platform(threaded)}]
+  } else {
+    return 1
   }
 }
 
